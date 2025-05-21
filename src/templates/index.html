@@ -14,13 +14,27 @@
     <style>
       :root {
         --background: #ffffff;
-        --foreground: #020817;
-        --muted: #f1f5f9;
-        --muted-foreground: #64748b;
-        --border: #e2e8f0;
-        --primary: #0f172a;
-        --primary-foreground: #f8fafc;
-        --radius: 0.5rem;
+        --foreground: #343541;
+        --muted: #f7f7f8;
+        --muted-foreground: #6e6e80;
+        --border: #d9d9e3;
+        --primary: #10a37f;
+        --primary-foreground: #ffffff;
+        --radius: 0.375rem;
+        --shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
+        --header-height: 60px;
+        --input-height: 80px;
+      }
+
+      [data-theme="dark"] {
+        --background: #343541;
+        --foreground: #ececf1;
+        --muted: #444654;
+        --muted-foreground: #d1d5db;
+        --border: #565869;
+        --primary: #10a37f;
+        --primary-foreground: #ffffff;
+        --shadow: 0 0 0 1px rgba(255, 255, 255, 0.1);
       }
 
       * {
@@ -37,6 +51,8 @@
         height: 100vh;
         width: 100vw;
         overflow: hidden;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
       }
 
       .container {
@@ -45,41 +61,71 @@
         display: flex;
         flex-direction: column;
         background: var(--background);
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 0 1rem;
+        position: relative;
       }
 
       .header {
-        padding: 1.5rem 0;
+        height: var(--header-height);
         background: var(--background);
         border-bottom: 1px solid var(--border);
         display: flex;
         align-items: center;
         justify-content: space-between;
-        margin-bottom: 1rem;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 10;
+        padding: 0 1rem;
       }
 
       .header h1 {
-        font-size: 1.5rem;
+        font-size: 1.125rem;
         font-weight: 600;
         color: var(--foreground);
+        letter-spacing: -0.025em;
+      }
+
+      .theme-toggle {
+        background: none;
+        border: none;
+        color: var(--foreground);
+        cursor: pointer;
+        padding: 0.5rem;
+        border-radius: var(--radius);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: background-color 0.2s;
+      }
+
+      .theme-toggle:hover {
+        background-color: var(--muted);
+      }
+
+      .content-area {
+        flex: 1;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        padding-top: var(--header-height);
+        padding-bottom: var(--input-height);
       }
 
       .upload-section {
-        padding: 1rem;
+        padding: 1.5rem;
         background: var(--muted);
-        border-radius: var(--radius);
-        margin-bottom: 1rem;
         display: flex;
         flex-direction: column;
         gap: 1rem;
+        border-bottom: 1px solid var(--border);
       }
 
       .upload-section h2 {
-        font-size: 1.25rem;
+        font-size: 0.875rem;
         font-weight: 500;
         color: var(--foreground);
+        letter-spacing: -0.025em;
       }
 
       .file-input {
@@ -93,17 +139,18 @@
       }
 
       .file-input label {
-        padding: 0.75rem 1.25rem;
+        padding: 0.5rem 1rem;
         background-color: var(--primary);
         color: var(--primary-foreground);
         border-radius: var(--radius);
         cursor: pointer;
-        font-size: 0.9375rem;
+        font-size: 0.875rem;
         transition: all 0.2s;
+        font-weight: 500;
       }
 
       .file-input label:hover {
-        background-color: #1e293b;
+        opacity: 0.9;
       }
 
       .file-name {
@@ -114,21 +161,17 @@
       #messages {
         flex: 1;
         overflow-y: auto;
-        padding: 1rem 0;
         display: flex;
         flex-direction: column;
-        gap: 1rem;
-        scroll-behavior: smooth;
+        gap: 0;
       }
 
       .message {
-        padding: 0.75rem 1.25rem;
-        border-radius: var(--radius);
-        max-width: 70%;
+        padding: 1.5rem;
         font-size: 0.9375rem;
         line-height: 1.5;
-        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
         animation: fadeIn 0.3s ease-out;
+        max-width: 100%;
       }
 
       @keyframes fadeIn {
@@ -143,87 +186,86 @@
       }
 
       .user-message {
-        background-color: var(--primary);
-        color: var(--primary-foreground);
-        margin-left: auto;
-        border-bottom-right-radius: 0.25rem;
+        background-color: var(--background);
+        color: var(--foreground);
       }
 
       .server-message {
         background-color: var(--muted);
         color: var(--foreground);
-        margin-right: auto;
-        border-bottom-left-radius: 0.25rem;
       }
 
       .system-message {
         background-color: var(--muted);
         color: var(--muted-foreground);
         text-align: center;
-        margin: 0.5rem auto;
+        padding: 0.75rem;
         font-size: 0.8125rem;
-        padding: 0.5rem 1rem;
-        border-radius: var(--radius);
-        max-width: fit-content;
       }
 
       .typing-indicator {
         background-color: var(--muted);
         color: var(--muted-foreground);
         font-size: 0.8125rem;
-        padding: 0.5rem 1rem;
-        border-radius: var(--radius);
-        margin: 0.25rem 0;
+        padding: 0.75rem;
         display: none;
-        max-width: fit-content;
-        margin-left: auto;
-        margin-right: auto;
       }
 
       .input-container {
-        padding: 1.5rem 0;
+        height: var(--input-height);
         background: var(--background);
         border-top: 1px solid var(--border);
         display: flex;
         gap: 1rem;
         align-items: center;
-        margin-top: 1rem;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 10;
+        padding: 0 1.5rem;
       }
 
       #messageInput {
         flex: 1;
-        padding: 0.875rem 1.25rem;
+        padding: 0.75rem 1rem;
         border: 1px solid var(--border);
         border-radius: var(--radius);
         background-color: var(--background);
         color: var(--foreground);
         font-size: 0.9375rem;
         transition: all 0.2s;
+        box-shadow: var(--shadow);
+        line-height: 1.5;
+        resize: none;
+        min-height: 44px;
+        max-height: 200px;
       }
 
       #messageInput:focus {
         outline: none;
         border-color: var(--primary);
-        box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.1);
+        box-shadow: 0 0 0 2px rgba(16, 163, 127, 0.1);
       }
 
       button {
-        padding: 0.875rem 1.5rem;
+        padding: 0.75rem 1rem;
         background-color: var(--primary);
         color: var(--primary-foreground);
         border: none;
         border-radius: var(--radius);
-        font-size: 0.9375rem;
+        font-size: 0.875rem;
         font-weight: 500;
         cursor: pointer;
         transition: all 0.2s;
         display: flex;
         align-items: center;
         gap: 0.5rem;
+        height: 44px;
       }
 
       button:hover {
-        background-color: #1e293b;
+        opacity: 0.9;
       }
 
       button:active {
@@ -231,71 +273,212 @@
       }
 
       /* Scrollbar styling */
+      .content-area::-webkit-scrollbar,
       #messages::-webkit-scrollbar {
         width: 6px;
       }
 
+      .content-area::-webkit-scrollbar-track,
       #messages::-webkit-scrollbar-track {
         background: transparent;
       }
 
+      .content-area::-webkit-scrollbar-thumb,
       #messages::-webkit-scrollbar-thumb {
         background-color: var(--border);
         border-radius: 3px;
       }
 
+      .content-area::-webkit-scrollbar-thumb:hover,
       #messages::-webkit-scrollbar-thumb:hover {
         background-color: var(--muted-foreground);
+      }
+
+      /* Code block styling */
+      pre {
+        background-color: var(--muted);
+        padding: 1rem;
+        border-radius: var(--radius);
+        overflow-x: auto;
+        margin: 1rem 0;
+        font-size: 0.875rem;
+        line-height: 1.5;
+      }
+
+      code {
+        font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+        font-size: 0.875rem;
+        line-height: 1.5;
+      }
+
+      /* Markdown styling */
+      p {
+        margin-bottom: 1rem;
+        line-height: 1.5;
+      }
+
+      ul, ol {
+        margin-bottom: 1rem;
+        padding-left: 1.5rem;
+      }
+
+      li {
+        margin-bottom: 0.5rem;
+        line-height: 1.5;
+      }
+
+      h1, h2, h3, h4, h5, h6 {
+        margin-bottom: 1rem;
+        font-weight: 600;
+        line-height: 1.5;
+      }
+
+      h1 {
+        font-size: 1.5rem;
+      }
+
+      h2 {
+        font-size: 1.25rem;
+      }
+
+      h3 {
+        font-size: 1.125rem;
+      }
+
+      blockquote {
+        border-left: 4px solid var(--primary);
+        padding-left: 1rem;
+        margin: 1rem 0;
+        color: var(--muted-foreground);
+      }
+
+      /* Typing indicator animation */
+      .typing-indicator::after {
+        content: "...";
+        animation: typing 1.5s infinite;
+      }
+
+      @keyframes typing {
+        0% { content: "."; }
+        33% { content: ".."; }
+        66% { content: "..."; }
+      }
+
+      /* Message transitions */
+      .message {
+        transition: background-color 0.2s ease;
+      }
+
+      /* Input auto-resize */
+      #messageInput {
+        overflow-y: hidden;
+        resize: none;
       }
     </style>
   </head>
   <body>
     <div class="container">
-      <div class="header">
+      <header class="header">
         <h1>PDF Chatbot</h1>
-        <div class="status">
-          <div class="status-dot"></div>
-          <span>Connected</span>
+        <button class="theme-toggle" onclick="toggleTheme()">
+          <span id="themeIcon">🌙</span>
+        </button>
+      </header>
+      
+      <div class="content-area">
+        <div class="upload-section">
+          <h2>Upload PDF</h2>
+          <div class="file-input">
+            <input type="file" id="pdfInput" accept=".pdf" />
+            <label for="pdfInput">Choose PDF</label>
+            <span class="file-name" id="fileName">No file chosen</span>
+          </div>
+        </div>
+
+        <div id="messages"></div>
+        <div id="typingIndicator" class="typing-indicator">
+          Processing your question...
         </div>
       </div>
 
-      <div class="upload-section">
-        <h2>Upload PDF</h2>
-        <div class="file-input">
-          <input type="file" id="pdfFile" accept=".pdf" />
-          <label for="pdfFile">Choose PDF</label>
-          <span class="file-name" id="fileName">No file chosen</span>
-        </div>
-      </div>
-
-      <div id="messages"></div>
-      <div id="typingIndicator" class="typing-indicator">
-        Processing your question...
-      </div>
       <div class="input-container">
-        <input
-          type="text"
+        <textarea
           id="messageInput"
-          placeholder="Ask a question about the PDF..."
-        />
-        <button onclick="sendMessage()">
+          placeholder="Type your message..."
+          disabled
+          rows="1"
+        ></textarea>
+        <button id="sendButton" disabled>
           <span>Send</span>
         </button>
       </div>
     </div>
 
     <script>
+      // Theme handling
+      const themeToggle = document.querySelector('.theme-toggle');
+      const themeIcon = document.getElementById('themeIcon');
+      const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+
+      function setTheme(isDark) {
+        document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+        themeIcon.textContent = isDark ? '☀️' : '🌙';
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      }
+
+      function toggleTheme() {
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        setTheme(currentTheme !== 'dark');
+      }
+
+      // Initialize theme based on browser preference
+      setTheme(prefersDarkScheme.matches);
+
+      // Listen for system theme changes
+      prefersDarkScheme.addEventListener('change', (e) => {
+        if (!localStorage.getItem('theme')) {
+          setTheme(e.matches);
+        }
+      });
+
       const socket = io("http://localhost:3004");
       const messagesDiv = document.getElementById("messages");
       const typingIndicator = document.getElementById("typingIndicator");
-      const pdfFileInput = document.getElementById("pdfFile");
+      const pdfFileInput = document.getElementById("pdfInput");
       const fileNameSpan = document.getElementById("fileName");
+      const messageInput = document.getElementById("messageInput");
+      const sendButton = document.getElementById("sendButton");
+
+      // Auto-resize textarea
+      function adjustTextareaHeight() {
+        messageInput.style.height = 'auto';
+        messageInput.style.height = messageInput.scrollHeight + 'px';
+      }
+
+      messageInput.addEventListener('input', adjustTextareaHeight);
+
+      function enableInput() {
+        messageInput.disabled = false;
+        sendButton.disabled = false;
+        messageInput.placeholder = "Ask a question about the PDF...";
+        messageInput.focus();
+      }
+
+      function disableInput() {
+        messageInput.disabled = true;
+        sendButton.disabled = true;
+        messageInput.placeholder = "Please upload a PDF first...";
+      }
+
+      // Initialize input state
+      disableInput();
 
       // Handle PDF file selection
       pdfFileInput.addEventListener("change", async (e) => {
         const file = e.target.files[0];
         if (file) {
           fileNameSpan.textContent = file.name;
+          typingIndicator.style.display = "block";
 
           const formData = new FormData();
           formData.append("file", file);
@@ -311,12 +494,21 @@
               addSystemMessage(
                 "PDF uploaded successfully. You can now ask questions about it."
               );
+              enableInput();
             } else {
               addSystemMessage(`Error: ${data.error}`);
+              disableInput();
             }
           } catch (error) {
+            console.error("Upload error:", error);
             addSystemMessage("Error uploading PDF. Please try again.");
+            disableInput();
+          } finally {
+            typingIndicator.style.display = "none";
           }
+        } else {
+          disableInput();
+          fileNameSpan.textContent = "No file chosen";
         }
       });
 
@@ -355,8 +547,7 @@
       }
 
       function sendMessage() {
-        const input = document.getElementById("messageInput");
-        const message = input.value.trim();
+        const message = messageInput.value.trim();
         if (message) {
           // Add user message to chat
           const userMessageElement = document.createElement("div");
@@ -367,18 +558,21 @@
 
           // Send message to server
           socket.emit("message", message);
-          input.value = "";
+          messageInput.value = "";
+          adjustTextareaHeight();
         }
       }
 
-      // Allow sending message with Enter key
-      document
-        .getElementById("messageInput")
-        .addEventListener("keypress", (e) => {
-          if (e.key === "Enter") {
-            sendMessage();
-          }
-        });
+      // Allow sending message with Enter key (Shift+Enter for new line)
+      messageInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" && !e.shiftKey) {
+          e.preventDefault();
+          sendMessage();
+        }
+      });
+
+      // Add click handler for send button
+      sendButton.addEventListener("click", sendMessage);
     </script>
   </body>
 </html>

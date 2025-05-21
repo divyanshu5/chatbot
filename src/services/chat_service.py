@@ -2,7 +2,6 @@ from openai import OpenAI
 import os
 import logging
 from dotenv import load_dotenv
-from .vector_db import VectorDB
 
 logger = logging.getLogger(__name__)
 
@@ -17,8 +16,6 @@ class ChatService:
         os.environ["OPENAI_API_KEY"] = self.api_key
         self.client = OpenAI()
         
-        # Initialize vector database
-        self.vector_db = VectorDB()
         self.context = None
         self.messages = [
             {"role": "system", "content": "You are a helpful AI assistant that answers questions based on the provided PDF content. If the question is not related to the PDF content, politely inform the user that you can only answer questions about the PDF."}
@@ -36,15 +33,9 @@ class ChatService:
             logger.debug("Initializing chat with PDF content")
             self.context = pdf_text
             
-            # Add documents to vector database
-            self.vector_db.add_documents(pdf_text)
-            
-            # Save the vector database
-            self.vector_db.save_index()
-            
             # Update system message
             self.messages[0]["content"] = f"""You are a helpful AI assistant that answers questions based on the provided PDF content.
-The content has been processed and stored in a vector database for efficient retrieval.
+The content has been processed and is available for reference.
 If the question is not related to the PDF content, politely inform the user that you can only answer questions about the PDF."""
             
             logger.debug("Chat initialized successfully")
@@ -68,16 +59,10 @@ If the question is not related to the PDF content, politely inform the user that
             
             logger.debug(f"Processing user message: {user_message}")
             
-            # Search for relevant chunks
-            relevant_chunks = self.vector_db.search(user_message)
-            
-            # Format the context from relevant chunks
-            context = "\n\n".join([chunk for chunk, _ in relevant_chunks])
-            
             # Add user message and context to conversation history
             self.messages.append({
                 "role": "user",
-                "content": f"Context from PDF:\n{context}\n\nQuestion: {user_message}"
+                "content": f"Context from PDF:\n{self.context}\n\nQuestion: {user_message}"
             })
             
             # Get response from OpenAI
@@ -98,4 +83,4 @@ If the question is not related to the PDF content, politely inform the user that
             
         except Exception as e:
             logger.error(f"Error getting response: {str(e)}", exc_info=True)
-            return f"Sorry, I encountered an error: {str(e)}" 
+            return f"Sorry, I encountered an error: {str(e)}"
