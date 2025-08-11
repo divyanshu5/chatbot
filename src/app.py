@@ -4,7 +4,6 @@ import os
 import logging
 from .services.pdf_service import PDFService
 from .services.chat_service import ChatService
-from .services.create_embeddings import CreateEmbeddings
 from dotenv import load_dotenv
 import markdown
 
@@ -23,49 +22,31 @@ socketio = SocketIO(app, cors_allowed_origins="*",async_mode='threading')
 # Initialize services
 pdf_service = PDFService()
 chat_service = ChatService()
-create_embeddings = CreateEmbeddings()
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('shadcn_chat.html')
 
 @app.route('/upload', methods=['POST'])
 def upload_pdf():
+    if 'file' not in request.files:
+        return jsonify({'error': 'No file part'}), 400
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({'error': 'No selected file'}), 400
+    if not file.filename.lower().endswith('.pdf'):
+        return jsonify({'error': 'Only PDF files are allowed'}), 400
     try:
-        logger.debug("Received upload request")
-        
-        if 'file' not in request.files:
-            logger.error("No file in request")
-            return jsonify({'error': 'No file provided'}), 400
-            
-        file = request.files['file']
-        if file.filename == '':
-            logger.error("Empty filename")
-            return jsonify({'error': 'No file selected'}), 400
-            
-        if not file.filename.lower().endswith('.pdf'):
-            logger.error(f"Invalid file type: {file.filename}")
-            return jsonify({'error': 'Only PDF files are allowed'}), 400
-            
-        try:
-            # Process PDF
-            pdf_text = pdf_service.process_pdf(file)
-            embeddings = create_embeddings.create_embeddings(pdf_text)
-            logger.debug("PDF processed successfully")
-            
-            # Initialize chat with PDF content
-            chat_service.initialize_chat(pdf_text)
-            logger.debug("Chat initialized with PDF content")
-            
-            return jsonify({'message': 'PDF processed successfully'})
-            
-        except Exception as e:
-            logger.error(f"Error processing PDF: {str(e)}", exc_info=True)
-            return jsonify({'error': str(e)}), 500
-            
+        # Process PDF
+        pdf_text = pdf_service.process_pdf(file)
+        logger.debug("PDF processed successfully")
+        # Initialize chat with PDF content
+        chat_service.initialize_chat(pdf_text)
+        logger.debug("Chat initialized with PDF content")
+        return jsonify({'message': 'PDF processed successfully'})
     except Exception as e:
-        logger.error(f"Unexpected error: {str(e)}", exc_info=True)
-        return jsonify({'error': 'An unexpected error occurred'}), 500
+        logger.error(f"Error processing PDF: {str(e)}", exc_info=True)
+        return jsonify({'error': str(e)}), 500
 
 @socketio.on('connect')
 def handle_connect():

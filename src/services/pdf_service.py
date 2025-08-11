@@ -1,6 +1,7 @@
 from PyPDF2 import PdfReader
 import io
 import logging
+from .embeddings import EmbeddingsService
 
 logger = logging.getLogger(__name__)
 
@@ -55,6 +56,9 @@ class PDFService:
                 raise Exception("No text could be extracted from the PDF")
             
             logger.debug("PDF processing completed successfully")
+            # embeddings_service = EmbeddingsService()
+            # embeddings = embeddings_service.custom_embed_text(text)
+            # print(embeddings)
             return text.strip()
             
         except Exception as e:

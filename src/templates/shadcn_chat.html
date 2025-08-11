@@ -39,23 +39,7 @@
         color: var(--foreground);
         min-height: 100vh;
         margin: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-      .main-card {
-        background: var(--primary);
-        border: 1px solid var(--border);
-        border-radius: var(--radius);
-        box-shadow: var(--shadow);
-        width: 70%;
-        max-width: 600px;
-        min-height: 80vh;
-        display: flex;
-        flex-direction: column;
-        overflow: hidden;
-        margin-left: 5%;
-        margin-right: 5%;
+        height: 100vh;
       }
       .page-title {
         text-align: center;
@@ -66,19 +50,38 @@
         color: var(--foreground);
         letter-spacing: -0.02em;
       }
+      .container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        height: calc(100vh - 5.5rem);
+        margin-left: 5%;
+        margin-right: 5%;
+      }
+      .main-card {
+        background: var(--primary);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        width: 100%;
+        max-width: 800px;
+        flex: 1 1 auto;
+        display: flex;
+        flex-direction: column;
+        overflow: visible;
+        margin-left: 0;
+        margin-right: 0;
+        height: 100%;
+      }
       .header {
         height: var(--header-height);
         background: var(--muted);
         border-bottom: 1px solid var(--border);
         display: flex;
         align-items: center;
-        justify-content: space-between;
+        justify-content: flex-end;
         padding: 0 1.5rem;
-      }
-      .header h1 {
-        font-size: 1.1rem;
-        font-weight: 600;
-        letter-spacing: -0.01em;
       }
       .theme-toggle {
         background: none;
@@ -98,6 +101,68 @@
       }
       .theme-toggle:hover {
         background: var(--muted);
+      }
+      .chat-input-fixed {
+        position: fixed;
+        left: 0;
+        bottom: 0;
+        width: 100vw;
+        background: var(--background);
+        border-top: 1px solid var(--border);
+        z-index: 100;
+        display: flex;
+        justify-content: center;
+        padding: 1rem 0;
+      }
+      .input-container {
+        width: auto;
+        max-width: 800px;
+        display: flex;
+        gap: 0.75rem;
+        align-items: center;
+        background: var(--background);
+        border-radius: var(--radius);
+        box-shadow: 0 1px 2px 0 rgba(0,0,0,0.04);
+        padding: 0;
+      }
+      #messageInput {
+        flex: 1;
+        padding: 0.75rem 1rem;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        background: var(--muted);
+        color: var(--foreground);
+        font-size: 1rem;
+        transition: border 0.2s;
+        resize: none;
+        min-height: 44px;
+        max-height: 200px;
+        width: 100%;
+        margin-right: 0.5rem;
+      }
+      #sendButton {
+        padding: 0.75rem 1.5rem;
+        background: var(--primary);
+        color: var(--primary-foreground);
+        border: none;
+        border-radius: var(--radius);
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 44px;
+        min-width: 64px;
+      }
+      #sendButton:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+      #sendButton:hover:not(:disabled) {
+        background: #000;
+        color: #fff;
       }
       .upload-section {
         padding: 1.25rem 1.5rem 1rem 1.5rem;
@@ -127,27 +192,28 @@
         border: none;
       }
       .file-input label:hover {
-        background: #059669;
+        background: #000;
+        color: #fff;
       }
       .file-name {
         font-size: 0.92rem;
         color: var(--muted-foreground);
       }
       .content-area {
-        flex: 1;
-        overflow-y: auto;
+        flex: 1 1 auto;
         background: var(--muted);
         padding: 1.5rem 1.5rem 0 1.5rem;
         display: flex;
         flex-direction: column;
         gap: 0.5rem;
+        min-height: 0;
       }
       #messages {
-        flex: 1;
-        overflow-y: auto;
+        flex: 1 1 auto;
         display: flex;
         flex-direction: column;
         gap: 0.5rem;
+        min-height: 0;
       }
       .message {
         padding: 1rem 1.25rem;
@@ -181,65 +247,35 @@
       }
       .typing-indicator {
         background: var(--muted);
-        color: var(--muted-foreground);
+        color: var(--foreground);
         font-size: 0.92rem;
         padding: 0.75rem 1.25rem;
         border-radius: var(--radius);
         margin: 0.5rem 0;
         display: none;
+        font-weight: 600;
       }
-      .input-container {
-        height: var(--input-height);
-        background: var(--background);
-        border-top: 1px solid var(--border);
-        display: flex;
-        gap: 0.75rem;
-        align-items: center;
-        padding: 0 1.5rem;
+      [data-theme="dark"] .typing-indicator {
+        color: #fff;
+        background: #232326;
       }
-      #messageInput {
-        flex: 1;
-        padding: 0.75rem 1rem;
-        border: 1px solid var(--border);
-        border-radius: var(--radius);
-        background: var(--muted);
-        color: var(--foreground);
-        font-size: 1rem;
-        transition: border 0.2s;
-        resize: none;
-        min-height: 44px;
-        max-height: 200px;
+      [data-theme="dark"] .message, [data-theme="dark"] .user-message, [data-theme="dark"] .server-message {
+        color: #fff;
       }
-      #messageInput:focus {
-        outline: none;
-        border-color: var(--primary);
+      [data-theme="dark"] .user-message {
+        background: #fff;
+        color: #18181b;
       }
-      #sendButton {
-        padding: 0.75rem 1.25rem;
-        background: var(--primary);
-        color: var(--primary-foreground);
-        border: none;
-        border-radius: var(--radius);
-        font-size: 1rem;
-        font-weight: 500;
-        cursor: pointer;
-        transition: background 0.2s;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.5rem;
-        height: 44px;
-        width: 44px;
-        min-width: 44px;
-        min-height: 44px;
-        box-shadow: 0 1px 2px 0 rgba(0,0,0,0.08);
+      [data-theme="dark"] .server-message {
+        background: #232326;
+        color: #fff;
       }
-      #sendButton:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
+      [data-theme="dark"] #messageInput {
+        background: #232326;
+        color: #fff;
       }
-      #sendButton:hover:not(:disabled) {
-        background: #000;
+      [data-theme="dark"] .system-message {
+        color: #a1a1aa;
       }
       /* Scrollbar styling */
       .content-area::-webkit-scrollbar,
@@ -266,7 +302,6 @@
         font-size: 0.95rem;
         line-height: 1.5;
       }
-      /* Markdown styling */
       p { margin-bottom: 1rem; line-height: 1.5; }
       ul, ol { margin-bottom: 1rem; padding-left: 1.5rem; }
       li { margin-bottom: 0.5rem; line-height: 1.5; }
@@ -275,33 +310,64 @@
       h2 { font-size: 1.25rem; }
       h3 { font-size: 1.125rem; }
       blockquote { border-left: 4px solid var(--primary); padding-left: 1rem; margin: 1rem 0; color: var(--muted-foreground); }
+      #messageInput::placeholder {
+        font-family: inherit;
+        font-size: 1rem;
+        opacity: 0.7;
+      }
+      .toast {
+        position: fixed;
+        top: 2rem;
+        right: 2rem;
+        background: #18181b;
+        color: #fff;
+        padding: 1rem 1.5rem;
+        border-radius: 0.5rem;
+        box-shadow: 0 4px 24px 0 rgba(0,0,0,0.12);
+        font-size: 1rem;
+        font-weight: 500;
+        z-index: 9999;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s, transform 0.3s;
+        transform: translateY(-20px);
+      }
+      .toast.show {
+        display: block;
+        opacity: 1;
+        pointer-events: auto;
+        transform: translateY(0);
+      }
     </style>
   </head>
   <body>
     <div class="page-title">PDF Chatbot</div>
-    <div class="main-card">
-      <div class="header" style="justify-content: flex-end;">
-        <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
-          <span id="themeIcon">🌙</span>
-        </button>
-      </div>
-      <div class="upload-section">
-        <div class="file-input">
-          <input type="file" id="pdfInput" accept=".pdf" />
-          <label for="pdfInput">Choose PDF</label>
-          <span class="file-name" id="fileName">No file chosen</span>
+    <div class="container">
+      <div class="main-card">
+        <div class="header">
+          <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+            <span id="themeIcon">🌙</span>
+          </button>
+        </div>
+        <div class="upload-section">
+          <div class="file-input">
+            <input type="file" id="pdfInput" accept=".pdf" />
+            <label for="pdfInput">Choose PDF</label>
+            <span class="file-name" id="fileName">No file chosen</span>
+          </div>
+        </div>
+        <div class="content-area">
+          <div id="messages"></div>
+          <div id="typingIndicator" class="typing-indicator">Processing your question...</div>
         </div>
       </div>
-      <div class="content-area">
-        <div id="messages"></div>
-        <div id="typingIndicator" class="typing-indicator">Processing your question...</div>
+      <div class="chat-input-fixed">
+        <form class="input-container" onsubmit="event.preventDefault(); sendButton.click();">
+          <textarea id="messageInput" placeholder="Type your message..." disabled rows="1"></textarea>
+          <button id="sendButton" type="submit" disabled aria-label="Send">Send</button>
+        </form>
       </div>
-      <div class="input-container">
-        <textarea id="messageInput" placeholder="Type your message..." disabled rows="1"></textarea>
-        <button id="sendButton" disabled aria-label="Send">
-          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-        </button>
-      </div>
+      <div id="toast" class="toast" style="display:none;"></div>
     </div>
     <script>
       // Theme handling
@@ -402,8 +468,17 @@
         }
       });
 
+      function showToast(message) {
+        const toast = document.getElementById('toast');
+        toast.textContent = message;
+        toast.classList.add('show');
+        setTimeout(() => {
+          toast.classList.remove('show');
+        }, 2500);
+      }
+
       socket.on("connect", () => {
-        console.log("Connected to server");
+        showToast("Connected to server");
       });
 
       socket.on("response", (data) => {
@@ -465,4 +540,4 @@
       sendButton.addEventListener("click", sendMessage);
     </script>
   </body>
-</html>
+</html> 
